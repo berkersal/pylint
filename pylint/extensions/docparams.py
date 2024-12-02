@@ -281,6 +281,12 @@ class DocstringParameterChecker(BaseChecker):
         if not isinstance(func_node, astroid.FunctionDef):
             return
 
+        # skip functions smaller than 'docstring-min-length'
+        lines = checker_utils.get_node_last_lineno(node) - node.lineno
+        max_lines = self.linter.config.docstring_min_length
+        if max_lines > -1 and lines < max_lines:
+            return
+
         # skip functions that match the 'no-docstring-rgx' config option
         no_docstring_rgx = self.linter.config.no_docstring_rgx
         if no_docstring_rgx and re.match(no_docstring_rgx, func_node.name):
@@ -338,6 +344,12 @@ class DocstringParameterChecker(BaseChecker):
         if self.linter.config.accept_no_return_doc:
             return
 
+        # skip functions smaller than 'docstring-min-length'
+        lines = checker_utils.get_node_last_lineno(node) - node.lineno
+        max_lines = self.linter.config.docstring_min_length
+        if max_lines > -1 and lines < max_lines:
+            return
+
         func_node: astroid.FunctionDef = node.frame()
 
         # skip functions that match the 'no-docstring-rgx' config option
@@ -362,6 +374,12 @@ class DocstringParameterChecker(BaseChecker):
 
     def visit_yield(self, node: nodes.Yield | nodes.YieldFrom) -> None:
         if self.linter.config.accept_no_yields_doc:
+            return
+
+        # skip functions smaller than 'docstring-min-length'
+        lines = checker_utils.get_node_last_lineno(node) - node.lineno
+        max_lines = self.linter.config.docstring_min_length
+        if max_lines > -1 and lines < max_lines:
             return
 
         func_node: astroid.FunctionDef = node.frame()
